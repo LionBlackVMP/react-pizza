@@ -19,7 +19,6 @@ export const Roots = createBrowserRouter([
         path: "/cart",
         element: <Cart />,
       },
-      <NotFound />,
     ],
   },
 ]);

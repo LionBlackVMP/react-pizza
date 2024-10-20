@@ -1,24 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { List } from "./List";
 
-export const Sort = () => {
-  const sortTypes = ["popularity", "price", "alphabet"];
-  const [state, setState] = useState({
-    isVisible: false,
-    active: 0,
-  });
-
-  const changeVisibility = useCallback(() => {
-    setState((prev) => ({ ...prev, isVisible: !prev.isVisible }));
-  }, []);
-
-  const handleSortChange = useCallback((index) => {
-    setState({ isVisible: false, active: index });
-  }, []);
+export const Sort = ({ active, sortChange }) => {
+  const sortTypes = ["rating", "price", "alphabet"];
+  const [isVisible, setState] = useState(false);
 
   return (
     <div className="sort">
-      <div className="sort__label" onClick={changeVisibility}>
+      <div className="sort__label" onClick={() => setState(!isVisible)}>
         <svg
           width="10"
           height="6"
@@ -32,17 +21,17 @@ export const Sort = () => {
           />
         </svg>
         <b>Sort by:</b>
-        <span>{sortTypes[state.active]}</span>
+        <span>{sortTypes[active]}</span>
       </div>
-      {state.isVisible && (
+      {isVisible && (
         <div className="sort__popup">
           <ul>
             {sortTypes.map((el, index) => (
               <List
                 key={index}
                 item={el}
-                isActive={state.active === index}
-                onClick={() => handleSortChange(index)}
+                isActive={active === index}
+                onClick={() => sortChange(index)}
               />
             ))}
           </ul>
