@@ -41,7 +41,7 @@ export const PizzaBlock = (props) => {
           {props.sizes.map((el, index) => (
             <List
               key={index}
-              item={el + " cm."} // " см." -> " cm."
+              item={el + " cm."}
               isActive={state.activeSize === index}
               onClick={() => updateState("activeSize", index)}
             />

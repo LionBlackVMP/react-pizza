@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { List } from "./List";
 
-export const Sort = ({ active, sortChange }) => {
+export const Sort = ({ active, setActive }) => {
   const sortTypes = ["rating", "price", "alphabet"];
   const [isVisible, setState] = useState(false);
 
@@ -31,7 +31,7 @@ export const Sort = ({ active, sortChange }) => {
                 key={index}
                 item={el}
                 isActive={active === index}
-                onClick={() => sortChange(index)}
+                onClick={() => setActive(index)}
               />
             ))}
           </ul>
