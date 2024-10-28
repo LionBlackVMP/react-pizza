@@ -1,7 +1,12 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setSearchValue } from "../../redux/slices/searchSlice";
 import styles from "./Search.module.scss";
 
-export const Search = ({ searchValue, setSearchValue }) => {
+export const Search = () => {
+  const dispatch = useDispatch();
+  const searchValue = useSelector((state) => state.search.value);
+
   return (
     <div className={styles.root}>
       <svg
@@ -18,13 +23,13 @@ export const Search = ({ searchValue, setSearchValue }) => {
       </svg>
       <input
         value={searchValue}
-        onChange={(event) => setSearchValue(event.target.value)}
+        onChange={(event) => dispatch(setSearchValue(event.target.value))}
         className={styles.input}
         placeholder="Search pizza"
       />
       {searchValue && (
         <svg
-          onClick={() => setSearchValue("")}
+          onClick={() => dispatch(setSearchValue(""))}
           className={styles.clearIcon}
           fill="none"
           height="24"

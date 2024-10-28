@@ -1,7 +1,11 @@
 import { List } from "./List";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategory } from "../redux/slices/filterSlice";
 
-export const Categories = ({ active, setActive }) => {
+export const Categories = () => {
   const pizzaTypes = ["All", "Meat", "Vegetarian", "Grill", "Spicy", "Closed"];
+  const category = useSelector((state) => state.filter.category);
+  const dispatch = useDispatch();
 
   return (
     <div className="categories">
@@ -10,8 +14,8 @@ export const Categories = ({ active, setActive }) => {
           <List
             key={index}
             item={el}
-            isActive={active === index}
-            onClick={() => setActive(index)}
+            isActive={category === index}
+            onClick={() => dispatch(setCategory(index))}
           />
         ))}
       </ul>

@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setSort } from "../redux/slices/sortSlice";
+
 import { List } from "./List";
 
-export const Sort = ({ active, setActive }) => {
+export const Sort = () => {
   const sortTypes = ["rating", "price", "alphabet"];
   const [isVisible, setState] = useState(false);
-
+  const sort = useSelector((state) => state.sort.sort);
+  const dispatch = useDispatch();
   return (
     <div className="sort">
       <div className="sort__label" onClick={() => setState(!isVisible)}>
@@ -20,8 +24,8 @@ export const Sort = ({ active, setActive }) => {
             fill="#2C2C2C"
           />
         </svg>
-        <b>Sort by:</b>
-        <span>{sortTypes[active]}</span>
+        <b>Sort by: </b>
+        <span>{sortTypes[sort]}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
@@ -30,8 +34,11 @@ export const Sort = ({ active, setActive }) => {
               <List
                 key={index}
                 item={el}
-                isActive={active === index}
-                onClick={() => setActive(index)}
+                isActive={sort === index}
+                onClick={() => {
+                  dispatch(setSort(index)); // Устанавливаем тип сортировки через Redux
+                  setState(false); // Закрываем меню после выбора
+                }}
               />
             ))}
           </ul>
