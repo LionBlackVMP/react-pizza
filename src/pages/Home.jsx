@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 import { Sort } from "../components/Sort";
 import { Categories } from "../components/Categories";
 import { PizzaBlock } from "../components/PizzaBlock/PizzaBlock";
 import { Skeleton } from "../components/PizzaBlock/Skeleton";
 import { Pagination } from "../components/Pagination/Pagination";
+import { selectHomeData } from "../redux/selectors";
 
 export const Home = () => {
-  const { sort, category, currentPage, searchValue } = useSelector((state) => ({
-    sort: state.sort.sort,
-    category: state.filter.category,
-    currentPage: state.page.current,
-    searchValue: state.search.value,
-  }));
+  const { sort, category, currentPage, searchValue } = useSelector(selectHomeData);
 
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
@@ -45,21 +42,17 @@ export const Home = () => {
       category && url.searchParams.append("category", category);
       searchValue && url.searchParams.append("search", searchValue);
 
-      const res = await fetch(url);
+      const res = await axios.get(url);
 
-      if (res.status === 404) {
-        setItems([]);
-        setError("Pizzas not found. Please check your search.");
-        return;
-      }
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
-      const data = await res.json();
-
-      setItems(data);
+      setItems(res.data);
       setError(null);
     } catch (err) {
-      setError(err.message);
+      if (err.response && err.response.status === 404) {
+        setItems([]);
+        setError("Pizzas not found. Please check your search.");
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
