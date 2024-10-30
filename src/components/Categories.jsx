@@ -1,10 +1,11 @@
 import { List } from "./List";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory } from "../redux/slices/filterSlice";
+import { generalSelect } from "../redux/selectors";
 
 export const Categories = () => {
-  const pizzaTypes = ["All", "Meat", "Vegetarian", "Grill", "Spicy", "Closed"];
-  const category = useSelector((state) => state.filter.category);
+  const { category, pizzaTypes } = useSelector(generalSelect);
+
   const dispatch = useDispatch();
 
   return (

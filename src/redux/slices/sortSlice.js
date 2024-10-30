@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   sort: 0,
+  sortTypes: ["rating", "price", "alphabet"],
 };
 
 export const sortSlice = createSlice({

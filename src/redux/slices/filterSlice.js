@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   category: 0,
+  pizzaTypes: ["All", "Meat", "Vegetarian", "Grill", "Spicy", "Closed"],
 };
 
 export const filterSlice = createSlice({

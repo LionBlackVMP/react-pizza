@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 import { setSearchValue } from "../../redux/slices/searchSlice";
 import styles from "./Search.module.scss";
-import { selectHomeData } from "../../redux/selectors";
+import { generalSelect } from "../../redux/selectors";
 
 export const Search = () => {
   const dispatch = useDispatch();
-  const { searchValue } = useSelector(selectHomeData);
+  const { searchValue } = useSelector(generalSelect);
   const inputRef = useRef();
 
   const debouncedDispatch = debounce((value) => {

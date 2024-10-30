@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { setSort } from "../redux/slices/sortSlice";
 
 import { List } from "./List";
+import { generalSelect } from "../redux/selectors";
 
 export const Sort = () => {
-  const sortTypes = ["rating", "price", "alphabet"];
+  const { sort, sortTypes } = useSelector(generalSelect);
   const [isVisible, setState] = useState(false);
-  const sort = useSelector((state) => state.sort.sort);
+
   const dispatch = useDispatch();
   return (
     <div className="sort">
