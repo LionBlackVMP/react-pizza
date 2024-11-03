@@ -1,11 +1,18 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import { List } from "../List";
+import { addItem } from "../../redux/slices/cartSlice";
+import { cartSelect } from "../../redux/selectors";
 
 export const PizzaBlock = (props) => {
+  const dispatch = useDispatch();
+  const { items } = useSelector(cartSelect);
+  const count = items.filter((el) => el.id === props.id).length;
+
   const [state, setState] = useState({
-    count: 0,
     activeSize: 0,
-    activeStyle: 0,
+    activeType: 0,
   });
 
   const updateState = (key, value) => {
@@ -14,12 +21,15 @@ export const PizzaBlock = (props) => {
       [key]: value,
     }));
   };
-
   const setPizzaCount = () => {
-    setState((prevState) => ({
-      ...prevState,
-      count: prevState.count + 1,
-    }));
+    dispatch(
+      addItem({
+        ...props,
+        types: state.activeType,
+        size: props.sizes[state.activeSize],
+        type: ["thin", "traditional"][state.activeType],
+      })
+    );
   };
 
   return (
@@ -32,8 +42,8 @@ export const PizzaBlock = (props) => {
             <List
               key={index}
               item={["thin", "traditional"][el]}
-              isActive={state.activeStyle === index}
-              onClick={() => updateState("activeStyle", index)}
+              isActive={state.activeType === index}
+              onClick={() => updateState("activeType", index)}
             />
           ))}
         </ul>
@@ -64,7 +74,7 @@ export const PizzaBlock = (props) => {
             />
           </svg>
           <span> Add </span>
-          <i>{state.count}</i>
+          {count > 0 && <i>{count}</i>}
         </button>
       </div>
     </div>

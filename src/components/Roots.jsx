@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { NotFound } from "../pages/NotFound/NotFound";
 import { Home } from "../pages/Home";
 import { App } from "../App";
-import { Cart } from "../pages/Cart";
+import { Cart } from "../pages/Cart/Cart";
 
 export const Roots = createBrowserRouter([
   {

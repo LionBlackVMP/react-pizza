@@ -4,9 +4,8 @@ import { setCategory } from "../redux/slices/filterSlice";
 import { generalSelect } from "../redux/selectors";
 
 export const Categories = () => {
-  const { category, pizzaTypes } = useSelector(generalSelect);
-
   const dispatch = useDispatch();
+  const { category, pizzaTypes } = useSelector(generalSelect);
 
   return (
     <div className="categories">

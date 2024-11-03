@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
 
 import { Sort } from "../components/Sort";
 import { Categories } from "../components/Categories";
@@ -13,57 +12,34 @@ import { setCategory } from "../redux/slices/filterSlice";
 import { setSort } from "../redux/slices/sortSlice";
 import { setPage } from "../redux/slices/pageSlice";
 import { setSearchValue } from "../redux/slices/searchSlice";
+import { fetchPizzas } from "../redux/slices/pizzaSlice";
 
 export const Home = () => {
-  const { sort, sortTypes, category, pizzaTypes, currentPage, searchValue } =
-    useSelector(generalSelect);
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    sort,
+    sortTypes,
+    category,
+    pizzaTypes,
+    currentPage,
+    searchValue,
+    pizzaItems,
+    loading,
+    error,
+  } = useSelector(generalSelect);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const params = useMemo(() => {
+    const params = {
+      sort: sortTypes[sort],
+      category: pizzaTypes[category],
+      page: currentPage,
+    };
 
-  const fetchData = async (sortType, category, searchValue, currentPage) => {
-    try {
-      const url = new URL("https://6713e287690bf212c76016d7.mockapi.io/items");
-      setLoading(true);
+    if (searchValue) params.search = searchValue;
 
-      switch (sortType) {
-        case "rating":
-          url.searchParams.append("sortby", "rating");
-          break;
-
-        case "price":
-          url.searchParams.append("sortby", "price");
-          break;
-
-        case "alphabet":
-          url.searchParams.append("sortby", "title");
-          url.searchParams.append("order", "asc");
-          break;
-        default:
-          break;
-      }
-      url.searchParams.append("limit", 4);
-      url.searchParams.append("page", currentPage);
-      category && url.searchParams.append("category", category);
-      searchValue && url.searchParams.append("search", searchValue);
-
-      const res = await axios.get(url);
-
-      setItems(res.data);
-      setError(null);
-    } catch (err) {
-      if (err.response && err.response.status === 404) {
-        setItems([]);
-        setError("Pizzas not found. Please check your search.");
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    return params;
+  }, [sort, sortTypes, category, pizzaTypes, currentPage, searchValue]);
 
   useEffect(() => {
     const sortParam = searchParams.get("sort");
@@ -78,19 +54,12 @@ export const Home = () => {
   }, [dispatch, searchParams, sortTypes, pizzaTypes]);
 
   useEffect(() => {
-    const params = {};
-    params.sort = sortTypes[sort];
-    params.category = pizzaTypes[category];
-    params.page = currentPage;
-
-    if (searchValue) params.search = searchValue;
-
     setSearchParams(params);
-    fetchData(sortTypes[sort], category, searchValue, currentPage);
-  }, [sort, category, searchValue, currentPage, sortTypes, pizzaTypes, setSearchParams]);
+    dispatch(fetchPizzas({ ...params, category: category }));
+  }, [params, category, setSearchParams, dispatch]);
 
   const skeletons = [...Array(6)].map((_, index) => <Skeleton key={index} />);
-  const pizzaBlock = items.map((el) => <PizzaBlock key={el.id} {...el} />);
+  const pizzaBlock = pizzaItems.map((el) => <PizzaBlock key={el.id} {...el} />);
 
   return (
     <div className="container">

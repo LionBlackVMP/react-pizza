@@ -1,18 +1,21 @@
 import { createSelector } from "reselect";
-// selectors.js
+
 export const selectSort = (state) => state.sort;
 export const selectFilter = (state) => state.filter;
 export const selectCurrentPage = (state) => state.page.current;
 export const selectSearchValue = (state) => state.search.value;
+export const setitems = (state) => state.pizza.items;
+export const cartSelect = (state) => state.cart;
 
 export const generalSelect = createSelector(
-  [selectSort, selectFilter, selectCurrentPage, selectSearchValue],
-  (sort, filter, currentPage, searchValue) => ({
+  [selectSort, selectFilter, selectCurrentPage, selectSearchValue, setitems],
+  (sort, filter, currentPage, searchValue, pizzaItems) => ({
     sort: sort.sort,
     sortTypes: sort.sortTypes,
     category: filter.category,
     pizzaTypes: filter.pizzaTypes,
     currentPage,
     searchValue,
+    pizzaItems,
   })
 );

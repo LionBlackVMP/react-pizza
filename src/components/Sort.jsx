@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setSort } from "../redux/slices/sortSlice";
 
-import { List } from "./List";
+import { setSort } from "../redux/slices/sortSlice";
 import { generalSelect } from "../redux/selectors";
+import { List } from "./List";
 
 export const Sort = () => {
   const { sort, sortTypes } = useSelector(generalSelect);
   const [isVisible, setState] = useState(false);
-
+  const sortRef = useRef();
   const dispatch = useDispatch();
+
+  const handleClickOutside = (event) => {
+    if (sortRef.current && !sortRef.current.contains(event.target)) {
+      setState(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
-    <div className="sort">
+    <div className="sort" ref={sortRef}>
       <div className="sort__label" onClick={() => setState(!isVisible)}>
         <svg
           width="10"

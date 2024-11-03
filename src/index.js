@@ -5,8 +5,8 @@ import { Provider } from "react-redux";
 
 import { Roots } from "./components/Roots";
 import reportWebVitals from "./reportWebVitals";
-import "./index.css";
 import { store } from "./redux/store";
+import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
