@@ -1,4 +1,6 @@
-@import "../variables";
+@use "../variables" as *;
+@use "../libs/normalize" as *;
+
 .pizza-block {
   width: 280px;
   text-align: center;
