@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
 import { setSort } from "../redux/slices/sortSlice";
 import { generalSelect } from "../redux/selectors";
 import { List } from "./List";
 
 export const Sort = () => {
-  const { sort, sortTypes } = useSelector(generalSelect);
+  const { sort, sortTypes } = useAppSelector(generalSelect);
   const [isVisible, setState] = useState(false);
-  const sortRef = useRef();
-  const dispatch = useDispatch();
+  const sortRef = useRef<HTMLDivElement | null>(null);
+  const dispatch = useAppDispatch();
 
-  const handleClickOutside = (event) => {
-    if (sortRef.current && !sortRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
       setState(false);
     }
   };

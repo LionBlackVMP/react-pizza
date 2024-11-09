@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect, useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+
 import { useSearchParams } from "react-router-dom";
 
 import { Sort } from "../components/Sort";
@@ -14,7 +15,7 @@ import { setPage } from "../redux/slices/pageSlice";
 import { setSearchValue } from "../redux/slices/searchSlice";
 import { fetchPizzas } from "../redux/slices/pizzaSlice";
 
-export const Home = () => {
+export const Home: FC = () => {
   const {
     sort,
     sortTypes,
@@ -23,14 +24,22 @@ export const Home = () => {
     currentPage,
     searchValue,
     pizzaItems,
-    loading,
-    error,
-  } = useSelector(generalSelect);
+    pizzaLoading,
+    pizzaError,
+  } = useAppSelector(generalSelect);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  interface Params {
+    sort: string;
+    category: string;
+    page: number;
+    search?: string;
+  }
+
   const params = useMemo(() => {
-    const params = {
+    const params: Params = {
       sort: sortTypes[sort],
       category: pizzaTypes[category],
       page: currentPage,
@@ -44,18 +53,20 @@ export const Home = () => {
   useEffect(() => {
     const sortParam = searchParams.get("sort");
     const categoryParam = searchParams.get("category");
-    const pageParam = parseInt(searchParams.get("page"));
+    const pageParam = searchParams.get("page");
     const searchParam = searchParams.get("search");
 
     sortParam && dispatch(setSort(sortTypes.indexOf(sortParam)));
     categoryParam && dispatch(setCategory(pizzaTypes.indexOf(categoryParam)));
-    pageParam && dispatch(setPage(pageParam));
+    pageParam && dispatch(setPage(parseInt(pageParam)));
     searchParam && dispatch(setSearchValue(searchParam));
   }, [dispatch, searchParams, sortTypes, pizzaTypes]);
 
   useEffect(() => {
-    setSearchParams(params);
-    dispatch(fetchPizzas({ ...params, category: category }));
+    const urlParams = { ...params, page: params.page.toString() };
+
+    setSearchParams(urlParams);
+    dispatch(fetchPizzas({ ...urlParams, category: category }));
   }, [params, category, setSearchParams, dispatch]);
 
   const skeletons = [...Array(6)].map((_, index) => <Skeleton key={index} />);
@@ -69,7 +80,7 @@ export const Home = () => {
       </div>
       <h2 className="content__title">All pizzas</h2>
       <div className="content__items">
-        {loading ? skeletons : error ? <p>{error}</p> : pizzaBlock}
+        {pizzaLoading ? skeletons : pizzaError ? <p>{pizzaError}</p> : pizzaBlock}
       </div>
       <Pagination />
     </div>

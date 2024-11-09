@@ -1,11 +1,11 @@
-import { useDispatch } from "react-redux";
 import ReactPaginate from "react-paginate";
+import { useAppDispatch } from "../../hooks/hooks";
 
 import styles from "./Pagination.module.scss";
 import { setPage } from "../../redux/slices/pageSlice";
 
 export const Pagination = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   return (
     <ReactPaginate

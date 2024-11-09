@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { clearItems } from "../../redux/slices/cartSlice";
 import { ItemCart } from "./ItemCart";
 import { cartSelect } from "../../redux/selectors";
 
 export const Cart = () => {
-  const dispatch = useDispatch();
-  const { items, totalPrice } = useSelector(cartSelect);
+  const dispatch = useAppDispatch();
+  const { items, totalPrice } = useAppSelector(cartSelect);
 
   const clearCart = () => {
     dispatch(clearItems());

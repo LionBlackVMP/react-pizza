@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { List } from "../List";
+import { PizzaItem } from "../../redux/slices/pizzaSlice";
 import { addItem } from "../../redux/slices/cartSlice";
 import { cartSelect } from "../../redux/selectors";
 
-export const PizzaBlock = (props) => {
-  const dispatch = useDispatch();
-  const { items } = useSelector(cartSelect);
+export const PizzaBlock: FC<PizzaItem> = (props) => {
+  const dispatch = useAppDispatch();
+  const { items } = useAppSelector(cartSelect);
   const count = items.filter((el) => el.id === props.id).length;
 
   const [state, setState] = useState({
@@ -15,21 +16,26 @@ export const PizzaBlock = (props) => {
     activeType: 0,
   });
 
-  const updateState = (key, value) => {
+  const updateState = (key: string, value: number) => {
     setState((prevState) => ({
       ...prevState,
       [key]: value,
     }));
   };
+
   const setPizzaCount = () => {
     dispatch(
       addItem({
         ...props,
-        types: state.activeType,
+        typeIndex: state.activeType,
         size: props.sizes[state.activeSize],
-        type: ["thin", "traditional"][state.activeType],
+        type: getTypeText(state.activeType),
       })
     );
+  };
+
+  const getTypeText = (index: number) => {
+    return ["thin", "traditional"][index];
   };
 
   return (
@@ -41,7 +47,7 @@ export const PizzaBlock = (props) => {
           {props.types.map((el, index) => (
             <List
               key={index}
-              item={["thin", "traditional"][el]}
+              item={getTypeText(el)}
               isActive={state.activeType === index}
               onClick={() => updateState("activeType", index)}
             />

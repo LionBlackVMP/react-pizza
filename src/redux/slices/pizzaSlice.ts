@@ -1,20 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export const fetchPizzas = createAsyncThunk(
+export const fetchPizzas = createAsyncThunk<PizzaItem[], urlParams, { rejectValue: string }>(
   "pizza/fetchPizza",
-  async ({ sort, category, search, page }, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
+      const { sort, category, search, page } = params;
       const url = new URL("https://6713e287690bf212c76016d7.mockapi.io/items");
+
       switch (sort) {
         case "rating":
           url.searchParams.append("sortby", "rating");
           break;
-
         case "price":
           url.searchParams.append("sortby", "price");
           break;
-
         case "alphabet":
           url.searchParams.append("sortby", "title");
           url.searchParams.append("order", "asc");
@@ -23,27 +23,56 @@ export const fetchPizzas = createAsyncThunk(
           break;
       }
 
-      url.searchParams.append("limit", 4);
+      url.searchParams.append("limit", "4");
       url.searchParams.append("page", page);
-      category && url.searchParams.append("category", category);
+      category && url.searchParams.append("category", category.toString());
       search && url.searchParams.append("search", search);
 
-      const { data } = await axios.get(url);
+      const { data } = await axios.get(url.toString());
 
       return data;
     } catch (err) {
-      return rejectWithValue(err.message);
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue("Unknown error occurred");
     }
   }
 );
 
+interface urlParams {
+  sort: string;
+  category: number;
+  page: string;
+  search?: string | undefined;
+}
+
+export interface PizzaItem {
+  id: number;
+  price: number;
+  category: number;
+  imageUrl: string;
+  rating: number;
+  sizes: number[];
+  title: string;
+  types: number[];
+}
+
+interface PizzaState {
+  items: PizzaItem[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: PizzaState = {
+  items: [],
+  loading: false,
+  error: null,
+};
+
 const pizzaSlice = createSlice({
   name: "pizza",
-  initialState: {
-    items: [],
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -57,7 +86,7 @@ const pizzaSlice = createSlice({
       })
       .addCase(fetchPizzas.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload ?? null;
       });
   },
 });

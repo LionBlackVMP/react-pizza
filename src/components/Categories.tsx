@@ -1,11 +1,11 @@
 import { List } from "./List";
-import { useSelector, useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { setCategory } from "../redux/slices/filterSlice";
 import { generalSelect } from "../redux/selectors";
 
 export const Categories = () => {
-  const dispatch = useDispatch();
-  const { category, pizzaTypes } = useSelector(generalSelect);
+  const dispatch = useAppDispatch();
+  const { category, pizzaTypes } = useAppSelector(generalSelect);
 
   return (
     <div className="categories">

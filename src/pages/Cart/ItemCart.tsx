@@ -1,17 +1,23 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
-import { addItem, removeItem, removeSameItems } from "../../redux/slices/cartSlice";
+import { addItem, CartItem, removeItem, removeSameItems } from "../../redux/slices/cartSlice";
 import { cartSelect } from "../../redux/selectors";
 
 export const ItemCart = () => {
-  const dispatch = useDispatch();
-  const { items } = useSelector(cartSelect);
+  const dispatch = useAppDispatch();
+  const { items } = useAppSelector(cartSelect);
 
-  const findItem = (id, size, type, items) => {
+  interface RenderedItems extends CartItem {
+    quantity: number;
+    key: string;
+    description: string;
+  }
+
+  const findItem = ({ id, size, type }: RenderedItems, items: CartItem[]) => {
     return items.find((el) => el.id === id && el.size === size && el.type === type);
   };
   const renderedItems = items
-    .reduce((acc, item) => {
+    .reduce((acc: RenderedItems[], item: CartItem) => {
       const existingIndex = acc.findIndex(
         (obj) => obj.id === item.id && obj.size === item.size && obj.type === item.type
       );
@@ -20,15 +26,10 @@ export const ItemCart = () => {
         acc[existingIndex].quantity += 1;
       } else {
         acc.push({
-          id: item.id,
-          size: item.size,
-          type: item.type,
-          title: item.title,
-          description: `${item.type}, ${item.size} cm.`,
-          price: item.price,
+          ...item,
           quantity: 1,
-          imageUrl: item.imageUrl,
           key: item.id + ` ${item.type}, ${item.size} cm.`,
+          description: `${item.type}, ${item.size} cm.`,
         });
       }
 
@@ -42,16 +43,24 @@ export const ItemCart = () => {
 
       return a.key.localeCompare(b.key);
     });
-  const handleIncrease = (id, size, type, items) => {
-    dispatch(addItem(findItem(id, size, type, items)));
+  const handleIncrease = (item: RenderedItems, items: CartItem[]) => {
+    try {
+      const foundItem = findItem(item, items);
+
+      if (!foundItem) throw new Error("Element wasn't found");
+
+      dispatch(addItem(foundItem));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleDecrease = (id, size, type, items) => {
-    dispatch(removeItem({ id, size, type }));
+  const handleDecrease = (item: RenderedItems) => {
+    dispatch(removeItem(item));
   };
 
-  const handleRemove = (id, size, type) => {
-    dispatch(removeSameItems({ id, size, type }));
+  const handleRemove = (item: RenderedItems) => {
+    dispatch(removeSameItems(item));
   };
 
   return (
@@ -59,7 +68,7 @@ export const ItemCart = () => {
       {renderedItems.length === 0 ? (
         <div>The cart is empty</div>
       ) : (
-        renderedItems.map((item) => (
+        renderedItems.map((item: RenderedItems) => (
           <div key={item.key} className="cart__item">
             <div className="cart__item-img">
               <img className="pizza-block__image" src={item.imageUrl} alt={item.title} />
@@ -71,7 +80,7 @@ export const ItemCart = () => {
             <div className="cart__item-count">
               <div
                 className="button button--outline button--circle cart__item-count-minus"
-                onClick={() => handleDecrease(item.id, item.size, item.type, items)}
+                onClick={() => handleDecrease(item)}
               >
                 <svg
                   width="10"
@@ -93,7 +102,7 @@ export const ItemCart = () => {
               <b>{item.quantity}</b>
               <div
                 className="button button--outline button--circle cart__item-count-plus"
-                onClick={() => handleIncrease(item.id, item.size, item.type, items)}
+                onClick={() => handleIncrease(item, items)}
               >
                 <svg
                   width="10"
@@ -116,10 +125,7 @@ export const ItemCart = () => {
             <div className="cart__item-price">
               <b>{item.price * item.quantity} $</b>
             </div>
-            <div
-              className="cart__item-remove"
-              onClick={() => handleRemove(item.id, item.size, item.type, items)}
-            >
+            <div className="cart__item-remove" onClick={() => handleRemove(item)}>
               <div className="button button--outline button--circle">
                 <svg
                   width="10"
